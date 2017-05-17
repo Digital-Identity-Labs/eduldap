@@ -1,0 +1,15 @@
+## Basic Configuration
+dn: cn=config
+objectClass: olcGlobal
+cn: config
+olcArgsFile: /var/run/openldap/slapd.args
+olcPidFile: /var/run/openldap/slapd.pid
+#olcReferral:	ldap://root.openldap.org
+olcSecurity: ssf=1 update_ssf=112 simple_bind=64
+
+
+## Create branch for schema
+dn: cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: schema
+
