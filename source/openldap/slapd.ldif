@@ -5,8 +5,14 @@ cn: config
 olcArgsFile: /var/run/openldap/slapd.args
 olcPidFile: /var/run/openldap/slapd.pid
 #olcReferral:	ldap://root.openldap.org
-olcSecurity: ssf=1 update_ssf=112 simple_bind=64
+#olcSecurity: ssf=1 update_ssf=112 simple_bind=64
 
+
+dn: olcDatabase={0}config,cn=config
+objectClass: olcDatabaseConfig
+olcDatabase: config
+olcRootDN: cn=Manager,cn=config
+olcRootPW: {SSHA}CAOJ/07YNO5LtS6UzvNS4svyTuh6IKIU
 
 ## Create branch for schema
 dn: cn=schema,cn=config
