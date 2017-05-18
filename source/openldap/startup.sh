@@ -35,5 +35,6 @@ if [ ! -f "$CONFIG_DIR/cn=config.ldif" ]; then
 
 fi
 
+exec /usr/sbin/slapd -d 389 -u ldap -g ldap
 
 
