@@ -1,3 +1,4 @@
+
 # Frontend settings
 #
 dn: olcDatabase=frontend,cn=config
