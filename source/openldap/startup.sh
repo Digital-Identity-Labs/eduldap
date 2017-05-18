@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/bin/sh
 
 CONFIG_DIR=/var/lib/openldap/slapd.d
 ETC=/etc/openldap
@@ -12,9 +12,10 @@ if [ ! -f "$CONFIG_DIR/cn=config.ldif" ]; then
   echo "Setting up initial LDAP server configuration..."
   slapadd -n0 -F $CONFIG_DIR -l $ETC/slapd.ldif
 
+  echo "Importing schema:"
   for file in $ETC/schema/*.ldif
   do
-    echo "Importing schema: $file..."
+    echo " $file"
     slapadd -n0 -F $CONFIG_DIR -l $file
   done
 
@@ -27,10 +28,9 @@ if [ ! -f "$CONFIG_DIR/cn=config.ldif" ]; then
     echo " $file"
   done
 
-
+  #slapadd -n0 -F $CONFIG_DIR -l $ETC/password.ldif
 
   slapadd -n0 -F $CONFIG_DIR -l $ETC/extras.ldif
-
 
 
 fi
