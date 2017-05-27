@@ -1,0 +1,50 @@
+
+dn:  dc=demo, dc=university
+objectClass: domain
+objectClass: top
+dc: demo
+
+dn: ou=service_accounts, dc=demo, dc=university
+objectClass: organizationalUnit
+objectClass: top
+description: User accounts for service access
+ou: service_accounts
+
+dn: cn=idp, ou=service_accounts, dc=demo, dc=university
+objectClass: top
+objectClass: person
+description: Service account used by IdP
+cn: idp
+sn: idp
+
+dn: cn=iam,ou=service_accounts, dc=demo, dc=university
+objectClass: top
+objectClass: person
+description: Service account used by administration interface to edit network settings
+cn: iam
+sn: iam
+
+dn: ou=people,  dc=demo, dc=university
+objectClass: organizationalUnit
+objectClass: top
+description: User records for staff and students
+ou: people
+
+dn: uid=bjensen, ou=people, dc=demo, dc=university
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: eduPerson
+objectClass: top
+uid: bjensen
+userpassword: {SHA}XjGjs626NfZFKHsqnMlJ/r2hZ/w=
+givenname: Barbara
+cn: Barbara Jensen
+cn: Babs Jensen
+sn: Jensen
+mail: bjensen@default.demo.university
+ou: people
+eduPersonPrincipalName:     bjensen@default.demo.university
+eduPersonEntitlement:       urn:mace:dir:entitlement:common-
+eduPersonScopedAffiliation: staff@default.demo.university
+eduPersonScopedAffiliation: member@default.demo.university
