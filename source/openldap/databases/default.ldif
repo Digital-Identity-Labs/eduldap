@@ -5,7 +5,7 @@ olcDatabase: mdb
 olcSuffix: dc=demo,dc=university
 olcDbDirectory: /var/lib/openldap/openldap-data/
 olcRootDN: cn=admin,dc=demo,dc=university
-olcRootPW: secret
+olcRootPW: XSECRET
 olcDbIndex: uid pres,eq
 olcDbIndex: cn,sn pres,eq,approx,sub
 olcDbIndex: objectClass eq

@@ -1,20 +1,37 @@
 #!/bin/sh
 
+## These variables are for private use, unlikely to change
 CONFIG_DIR=/var/lib/openldap/slapd.d
 DATA_DIR=/var/lib/openldap/openldap-data
 ETC=/etc/openldap
 
-PASSWORD=$1
-DEBUG_LEVEL=0
-DATABASE=default
-SEED=default
+## These variables can be passed on commandline, Dockerfile, etc to change behaviour
+ENV_MODE=${ENV_MODE:-development}
+ADMIN_SECRET=${ADMIN_SECRET:-`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`}
+BASE_DN=${BASE_DN:-'dc=demo,dc=university'}
+DEBUG_LEVEL=${DEBUG_LEVEL:-0}
+DATABASE=${DATABASE:-default}
+SEED=${SEED:-default}
 
 ## Configuration data will be stored here
 mkdir -p $CONFIG_DIR
 chown -R ldap:ldap $CONFIG_DIR
 
 if [ ! -f "$CONFIG_DIR/cn=config.ldif" ]; then
+
   echo "No LDAP configuration has been found. Initialising new configuration!"
+
+  echo ":: Mode: ${ENV_MODE}"
+
+  echo ":: Rewriting admin password in '${DATABASE}' database"
+  sed -i "s/XSECRET/${ADMIN_SECRET}/g" $ETC/databases/$DATABASE.ldif
+
+  if [ $ENV_MODE == "production" ]; then
+    echo "    Admin password: \$ADMIN_SECRET"
+  else
+    echo "    Admin password: ${ADMIN_SECRET}"
+  fi
+
   echo ":: Setting up core LDAP server configuration"
   slapadd -n0 -F $CONFIG_DIR -l $ETC/slapd.ldif
 
