@@ -1,36 +1,36 @@
 
-dn:  dc=demo, dc=university
+dn:  dc=demo,dc=university
 objectClass: domain
 objectClass: top
 dc: demo
 
-dn: ou=service_accounts, dc=demo, dc=university
+dn: ou=service_accounts, dc=demo,dc=university
 objectClass: organizationalUnit
 objectClass: top
 description: User accounts for service access
 ou: service_accounts
 
-dn: cn=idp, ou=service_accounts, dc=demo, dc=university
+dn: cn=idp, ou=service_accounts, dc=demo,dc=university
 objectClass: top
 objectClass: person
 description: Service account used by IdP
 cn: idp
 sn: idp
 
-dn: cn=iam,ou=service_accounts, dc=demo, dc=university
+dn: cn=iam,ou=service_accounts, dc=demo,dc=university
 objectClass: top
 objectClass: person
 description: Service account used by administration interface to edit network settings
 cn: iam
 sn: iam
 
-dn: ou=people,  dc=demo, dc=university
+dn: ou=people,  dc=demo,dc=university
 objectClass: organizationalUnit
 objectClass: top
 description: User records for staff and students
 ou: people
 
-dn: uid=bjensen, ou=people, dc=demo, dc=university
+dn: uid=bjensen, ou=people, dc=demo,dc=university
 objectClass: person
 objectClass: inetOrgPerson
 objectClass: organizationalPerson
