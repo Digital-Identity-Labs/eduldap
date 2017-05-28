@@ -1,5 +1,10 @@
 #!/bin/sh
 
+## Convert full DN to an LDIF line for the naming attribute (used for root entry)
+function dn_to_na {
+  echo $1 | cut -d',' -f 1 | sed 's/=/: /'
+}
+
 ## These variables are for private use, unlikely to change
 CONFIG_DIR=/var/lib/openldap/slapd.d
 DATA_DIR=/var/lib/openldap/openldap-data
@@ -13,23 +18,39 @@ DEBUG_LEVEL=${DEBUG_LEVEL:-0}
 DATABASE=${DATABASE:-default}
 SEED=${SEED:-default}
 
+## Derived from user options
+DATABASE_FILE=$ETC/databases/$DATABASE.ldif
+SEED_FILE=$ETC/seeds/$SEED.ldif
+DATABASE_SUFFIX=`grep olcSuffix $DATABASE_FILE | head -1 | cut -d':' -f 2 | sed 's/^ //'`
+ONA=$(dn_to_na $DATABASE_SUFFIX)
+NNA=$(dn_to_na $BASE_DN)
+
 ## Configuration data will be stored here
 mkdir -p $CONFIG_DIR
 chown -R ldap:ldap $CONFIG_DIR
 
+echo ":: Mode: ${ENV_MODE}"
+
+## If this is the first run (after image creation) we need to set up the LDAP server config and data
 if [ ! -f "$CONFIG_DIR/cn=config.ldif" ]; then
 
   echo "No LDAP configuration has been found. Initialising new configuration!"
 
-  echo ":: Mode: ${ENV_MODE}"
-
   echo ":: Rewriting admin password in '${DATABASE}' database"
-  sed -i "s/XSECRET/${ADMIN_SECRET}/g" $ETC/databases/$DATABASE.ldif
+  sed -i "s/XSECRET/${ADMIN_SECRET}/g" $DATABASE_FILE
 
   if [ $ENV_MODE == "production" ]; then
     echo "    Admin password: \$ADMIN_SECRET"
   else
     echo "    Admin password: ${ADMIN_SECRET}"
+  fi
+
+  if [ $BASE_DN != $DATABASE_SUFFIX ]; then
+    echo ":: Rewriting Suffix in Database configuration from $DATABASE_SUFFIX to $BASE_DN..."
+    sed -i "s/${DATABASE_SUFFIX}/${BASE_DN}/g" $DATABASE_FILE
+    echo ":: Rewriting Suffix in Seed configuration from $DATABASE_SUFFIX to $BASE_DN..."
+    sed -i "s/${DATABASE_SUFFIX}/${BASE_DN}/g" $SEED_FILE
+    sed -i "s/^${ONA}$/${NNA}/g"               $SEED_FILE
   fi
 
   echo ":: Setting up core LDAP server configuration"
@@ -51,7 +72,7 @@ if [ ! -f "$CONFIG_DIR/cn=config.ldif" ]; then
   done
 
   echo ":: Adding database definition, ACLs, etc from $DATABASE.ldif"
-  slapadd -n0 -F $CONFIG_DIR -l $ETC/databases/$DATABASE.ldif
+  slapadd -n0 -F $CONFIG_DIR -l $DATABASE_FILE
 
   echo ":: Testing configuration..."
   #/usr/sbin/slapd  -T t  -u ldap -F $CONFIG_DIR
@@ -63,7 +84,7 @@ if [ ! -f "$CONFIG_DIR/cn=config.ldif" ]; then
   done
 
   echo ":: Loading seed data from $SEED.ldif"
-  slapadd -n1 -F $CONFIG_DIR -l $ETC/seeds/$SEED.ldif
+  slapadd -n1 -F $CONFIG_DIR -l $SEED_FILE
 
   echo ":: Post configuration adjustments"
   slapadd -n0 -F $CONFIG_DIR -l $ETC/extras.ldif
