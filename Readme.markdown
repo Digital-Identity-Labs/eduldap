@@ -15,6 +15,7 @@ This is an early version, still very much in-development.
 * Education schemas as used by SAML/Shibboleth IdPs: eduPerson, SCHAC
 * Includes variety of ready-made directories for quick testing
 * Easy customisation
+* Even a few tests.
 
 ## Quickstart
 
