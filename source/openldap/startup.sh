@@ -1,5 +1,9 @@
 #!/bin/sh
 
+set -e
+set -u
+#set -x
+
 ## Convert full DN to an LDIF line for the naming attribute (used for root entry)
 function dn_to_na {
   echo $1 | cut -d',' -f 1 | sed 's/=/: /'
@@ -28,6 +32,10 @@ NNA=$(dn_to_na $BASE_DN)
 ## Configuration data will be stored here
 mkdir -p $CONFIG_DIR
 chown -R ldap:ldap $CONFIG_DIR
+
+## Make sure we have files for pids
+mkdir -p /var/run/openldap
+chown -R ldap:ldap /var/run/openldap
 
 echo ":: Mode: ${ENV_MODE}"
 
