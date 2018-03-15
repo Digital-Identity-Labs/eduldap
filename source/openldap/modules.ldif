@@ -11,4 +11,5 @@ olcModulepath:	/usr/lib/openldap
 olcModuleload:	back_mdb.so
 #olcModuleload:	back_passwd.so
 #olcModuleload:	back_shell.so
+olcModuleload: pw-pbkdf2.so
 
