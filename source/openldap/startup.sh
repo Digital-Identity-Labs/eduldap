@@ -21,6 +21,7 @@ BASE_DN=${BASE_DN:-'dc=demo,dc=university'}
 DEBUG_LEVEL=${DEBUG_LEVEL:-0}
 DATABASE=${DATABASE:-default}
 SEED=${SEED:-default}
+RESET=${RESET:-false}
 
 ## Derived from user options
 DATABASE_FILE=$ETC/databases/$DATABASE.ldif
@@ -38,6 +39,13 @@ mkdir -p /var/run/openldap
 chown -R ldap:ldap /var/run/openldap
 
 echo ":: Mode: ${ENV_MODE}"
+
+if [ "$RESET" = "true" ]; then
+  echo "Resetting data and configuration as RESET=true..."
+  rm -rfv $CONFIG_DIR/*
+  rm -rfv $DATA_DIR/*.mdb
+  echo "Reset complete"
+fi
 
 ## If this is the first run (after image creation) we need to set up the LDAP server config and data
 if [ ! -f "$CONFIG_DIR/cn=config.ldif" ]; then
@@ -62,16 +70,16 @@ if [ ! -f "$CONFIG_DIR/cn=config.ldif" ]; then
   fi
 
   echo ":: Setting up core LDAP server configuration"
-  slapadd -n0 -F $CONFIG_DIR -l $ETC/slapd.ldif
+  slapadd -d0 -n0 -F $CONFIG_DIR -l $ETC/slapd.ldif
 
   echo ":: Importing schema:"
   for file in $ETC/schema/*.ldif
   do
     echo "    $file"
-    slapadd -n0 -F $CONFIG_DIR -l $file
+    slapadd  -d0 -n0 -F $CONFIG_DIR -l $file
   done
 
-  slapadd -n0 -F $CONFIG_DIR -l $ETC/modules.ldif
+  slapadd -d0 -n0 -F $CONFIG_DIR -l $ETC/modules.ldif
 
   echo ":: Available databases:"
   for file in $ETC/databases/*.ldif
@@ -80,10 +88,7 @@ if [ ! -f "$CONFIG_DIR/cn=config.ldif" ]; then
   done
 
   echo ":: Adding database definition, ACLs, etc from $DATABASE.ldif"
-  slapadd -n0 -F $CONFIG_DIR -l $DATABASE_FILE
-
-  echo ":: Testing configuration..."
-  #/usr/sbin/slapd  -T t  -u ldap -F $CONFIG_DIR
+  slapadd  -d0 -n0 -F $CONFIG_DIR -l $DATABASE_FILE
 
   echo ":: Available seed data:"
   for file in $ETC/seeds/*.ldif
@@ -92,13 +97,17 @@ if [ ! -f "$CONFIG_DIR/cn=config.ldif" ]; then
   done
 
   echo ":: Loading seed data from $SEED.ldif"
-  slapadd -n1 -F $CONFIG_DIR -l $SEED_FILE
+  slapadd  -d0 -n1 -F $CONFIG_DIR -l $SEED_FILE
 
   echo ":: Post configuration adjustments"
-  slapadd -n0 -F $CONFIG_DIR -l $ETC/extras.ldif
+  slapadd  -d0 -n0 -F $CONFIG_DIR -l $ETC/extras.ldif
 
   chown -R ldap:ldap $CONFIG_DIR
   chown -R ldap:ldap $DATA_DIR/*
+
+  echo ":: Testing configuration..."
+  /usr/sbin/slaptest -F $CONFIG_DIR
+
 fi
 
 echo "Starting LDAP service..."
