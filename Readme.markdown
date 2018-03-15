@@ -24,4 +24,4 @@ This is an early version, still very much in-development.
 ## Misc
 
 
- * --ulimit nofile=1024:1024
+ * add --ulimit nofile=1024:1024 to docker run to stop runaway memory usage
