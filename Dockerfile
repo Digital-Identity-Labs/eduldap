@@ -15,5 +15,4 @@ COPY source/openldap /etc/openldap
 USER root
 EXPOSE 389
 
-#ENTRYPOINT exec /etc/openldap/startup.sh
-CMD /bin/sh
+ENTRYPOINT exec /etc/openldap/startup.sh
