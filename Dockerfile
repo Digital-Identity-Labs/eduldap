@@ -1,5 +1,8 @@
 FROM alpine:3.7
-LABEL maintainer "pete@digitalidentitylabs.com"
+
+LABEL description="OpenLDAP services with education schema" \
+      version="0.2.0" \
+      maintainer="pete@digitalidentitylabs.com"
 
 RUN  apk add --update --no-cache \
      openldap \
