@@ -10,7 +10,8 @@ RUN  apk add --update --no-cache \
      openldap-clients \
      openldap-mqtt \
      openldap-overlay-all \
-     openldap-passwd-pbkdf2
+     openldap-passwd-pbkdf2 \
+     gettext
 
 COPY etcfs /etc
 
@@ -18,4 +19,4 @@ COPY etcfs /etc
 USER root
 EXPOSE 389
 
-ENTRYPOINT exec /etc/openldap/startup.sh
+ENTRYPOINT exec /etc/eduldap/bin/startup.sh

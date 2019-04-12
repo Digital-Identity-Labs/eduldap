@@ -10,9 +10,10 @@ function dn_to_na {
 }
 
 ## These variables are for private use, unlikely to change
-CONFIG_DIR=/var/lib/openldap/slapd.d
 DATA_DIR=/var/lib/openldap/openldap-data
+EDULDAP=/etc/eduldap
 ETC=/etc/openldap
+CONFIG_DIR=${ETC}/slapd.d
 
 ## These variables can be passed on commandline, Dockerfile, etc to change behaviour
 ENV_MODE=${ENV_MODE:-development}
@@ -22,10 +23,13 @@ DEBUG_LEVEL=${DEBUG_LEVEL:-0}
 DATABASE=${DATABASE:-default}
 SEED=${SEED:-default}
 RESET=${RESET:-false}
+TIDY=${TIDY:-true}
+SLAPD_URLS="ldap:/// ldapi:///"
+SLAPD_OPTIONS="  "
 
 ## Derived from user options
-DATABASE_FILE=$ETC/databases/$DATABASE.ldif
-SEED_FILE=$ETC/seeds/$SEED.ldif
+DATABASE_FILE=$EDULDAP/databases/$DATABASE.ldif
+SEED_FILE=$EDULDAP/seeds/$SEED.ldif
 DATABASE_SUFFIX=`grep olcSuffix $DATABASE_FILE | head -1 | cut -d':' -f 2 | sed 's/^ //'`
 ONA=$(dn_to_na $DATABASE_SUFFIX)
 NNA=$(dn_to_na $BASE_DN)
@@ -37,10 +41,16 @@ chown -R ldap:ldap $CONFIG_DIR
 ## Make sure we have files for pids
 mkdir -p /var/run/openldap
 chown -R ldap:ldap /var/run/openldap
+mkdir -p /run/openldap
+chown -R ldap:ldap /run/openldap
+
+## Lock down permissions on the eduldap source directory
+chown -R root:root ${EDULDAP}
+chmod -R 0600 ${EDULDAP}
 
 echo ":: Mode: ${ENV_MODE}"
 
-if [ "$RESET" = "true" ]; then
+if [ "${RESET}" == "true" ]; then
   echo "Resetting data and configuration as RESET=true..."
   rm -rfv $CONFIG_DIR/*
   rm -rfv $DATA_DIR/*.mdb
@@ -70,19 +80,19 @@ if [ ! -f "$CONFIG_DIR/cn=config.ldif" ]; then
   fi
 
   echo ":: Setting up core LDAP server configuration"
-  slapadd -d0 -n0 -F $CONFIG_DIR -l $ETC/slapd.ldif
+  slapadd -d0 -n0 -F $CONFIG_DIR -l $EDULDAP/config/slapd.ldif
 
   echo ":: Importing schema:"
-  for file in $ETC/schema/*.ldif
+  for file in $EDULDAP/schema/*.ldif
   do
     echo "    $file"
     slapadd  -d0 -n0 -F $CONFIG_DIR -l $file
   done
 
-  slapadd -d0 -n0 -F $CONFIG_DIR -l $ETC/modules.ldif
+  slapadd -d0 -n0 -F $CONFIG_DIR -l $EDULDAP/config/modules.ldif
 
   echo ":: Available databases:"
-  for file in $ETC/databases/*.ldif
+  for file in $EDULDAP/databases/*.ldif
   do
     echo "    $file"
   done
@@ -91,7 +101,7 @@ if [ ! -f "$CONFIG_DIR/cn=config.ldif" ]; then
   slapadd  -d0 -n0 -F $CONFIG_DIR -l $DATABASE_FILE
 
   echo ":: Available seed data:"
-  for file in $ETC/seeds/*.ldif
+  for file in $EDULDAP/seeds/*.ldif
   do
     echo "    $file"
   done
@@ -100,17 +110,22 @@ if [ ! -f "$CONFIG_DIR/cn=config.ldif" ]; then
   slapadd  -d0 -n1 -F $CONFIG_DIR -l $SEED_FILE
 
   echo ":: Post configuration adjustments"
-  slapadd  -d0 -n0 -F $CONFIG_DIR -l $ETC/extras.ldif
+  slapadd  -d0 -n0 -F $CONFIG_DIR -l $EDULDAP/config/extras.ldif
 
   chown -R ldap:ldap $CONFIG_DIR
   chown -R ldap:ldap $DATA_DIR/*
+
+  if [ "${TIDY}" == "true" ]; then
+    echo ":: Removing unused files from ${ETC} as TIDY=true..."
+    rm -rf ${ETC}/schema
+  fi
 
   echo ":: Testing configuration..."
   /usr/sbin/slaptest -F $CONFIG_DIR
 
 fi
 
-echo "Starting LDAP service..."
-exec /usr/sbin/slapd -F $CONFIG_DIR -d $DEBUG_LEVEL -u ldap -g ldap
+echo "Starting LDAP service on ${SLAPD_URLS} ..."
+exec /usr/sbin/slapd -h "\"ldap:/// ldapi:///\"" -F $CONFIG_DIR -d $DEBUG_LEVEL -u ldap -g ldap
 
 
