@@ -1,4 +1,4 @@
-FROM alpine:3.7
+FROM alpine:3.9
 
 LABEL description="OpenLDAP services with education schema" \
       version="0.2.0" \
