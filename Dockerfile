@@ -1,7 +1,7 @@
 FROM alpine:3.9
 
-LABEL description="OpenLDAP services with education schema" \
-      version="0.2.0" \
+LABEL description="Configurable OpenLDAP service with education schema" \
+      version="0.3.0" \
       maintainer="pete@digitalidentitylabs.com"
 
 RUN  apk add --update --no-cache \
@@ -12,7 +12,7 @@ RUN  apk add --update --no-cache \
      openldap-overlay-all \
      openldap-passwd-pbkdf2
 
-COPY source/openldap /etc/openldap
+COPY etcfs /etc
 
 
 USER root
