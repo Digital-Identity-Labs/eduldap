@@ -37,7 +37,7 @@ ONA=$(dn_to_na $DATABASE_SUFFIX)
 NNA=$(dn_to_na $BASE_DN)
 
 ## OpenLDAP can go a little too far with memory
-ulimit --nofile 1024:1024
+ulimit -n 8192
 
 ## Configuration data will be stored here
 mkdir -p $CONFIG_DIR
