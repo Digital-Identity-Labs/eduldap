@@ -30,8 +30,8 @@ SLAPD_URLS="ldap:/// ldapi:///"
 SLAPD_OPTIONS="  "
 
 ## Derived from user options
-DATABASE_FILE=$EDULDAP/databases/$DATABASE.ldif
-SEED_FILE=$EDULDAP/seeds/$SEED.ldif
+DATABASE_FILE=$EDULDAP/initial_config/databases/$DATABASE.ldif
+SEED_FILE=$EDULDAP/initial_config/seeds/$SEED.ldif
 DATABASE_SUFFIX=`grep olcSuffix $DATABASE_FILE | head -1 | cut -d':' -f 2 | sed 's/^ //'`
 ONA=$(dn_to_na $DATABASE_SUFFIX)
 NNA=$(dn_to_na $BASE_DN)
@@ -88,19 +88,19 @@ if [ ! -f "$CONFIG_DIR/cn=config.ldif" ]; then
   fi
 
   echo ":: Setting up core LDAP server configuration"
-  slapadd -d0 -n0 -F $CONFIG_DIR -l $EDULDAP/config/slapd.ldif
+  slapadd -d0 -n0 -F $CONFIG_DIR -l $EDULDAP/initial_config/basic.ldif
 
   echo ":: Importing schema:"
-  for file in $EDULDAP/schema/*.ldif
+  for file in $EDULDAP/initial_config/schema/*.ldif
   do
     echo "    $file"
     slapadd  -d0 -n0 -F $CONFIG_DIR -l $file
   done
 
-  slapadd -d0 -n0 -F $CONFIG_DIR -l $EDULDAP/config/modules.ldif
+  slapadd -d0 -n0 -F $CONFIG_DIR -l $EDULDAP/initial_config/modules.ldif
 
   echo ":: Available databases:"
-  for file in $EDULDAP/databases/*.ldif
+  for file in $EDULDAP/initial_config/databases/*.ldif
   do
     echo "    $file"
   done
@@ -109,7 +109,7 @@ if [ ! -f "$CONFIG_DIR/cn=config.ldif" ]; then
   slapadd  -d0 -n0 -F $CONFIG_DIR -l $DATABASE_FILE
 
   echo ":: Available seed data:"
-  for file in $EDULDAP/seeds/*.ldif
+  for file in $EDULDAP/initial_config/seeds/*.ldif
   do
     echo "    $file"
   done
@@ -118,7 +118,7 @@ if [ ! -f "$CONFIG_DIR/cn=config.ldif" ]; then
   slapadd  -d0 -n1 -F $CONFIG_DIR -l $SEED_FILE
 
   echo ":: Post configuration adjustments"
-  slapadd  -d0 -n0 -F $CONFIG_DIR -l $EDULDAP/config/extras.ldif
+  slapadd  -d0 -n0 -F $CONFIG_DIR -l $EDULDAP/initial_config/extras.ldif
 
   chown -R ldap:ldap $CONFIG_DIR
   chown -R ldap:ldap $DATA_DIR/*
