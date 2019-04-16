@@ -14,12 +14,14 @@ DATA_DIR=/var/lib/openldap/openldap-data
 EDULDAP=/etc/eduldap
 ETC=/etc/openldap
 CONFIG_DIR=${ETC}/slapd.d
+RUN_DIR=/var/run/openldap
+SOCK_DIR=/var/lib/openldap/run
 
 ## These variables can be passed on commandline, Dockerfile, etc to change behaviour
 ENV_MODE=${ENV_MODE:-development}
 ADMIN_SECRET=${ADMIN_SECRET:-`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`}
 BASE_DN=${BASE_DN:-'dc=demo,dc=university'}
-DEBUG_LEVEL=${DEBUG_LEVEL:-0}
+DEBUG_LEVEL=${DEBUG_LEVEL:-256}
 DATABASE=${DATABASE:-default}
 SEED=${SEED:-default}
 RESET=${RESET:-false}
@@ -39,10 +41,15 @@ mkdir -p $CONFIG_DIR
 chown -R ldap:ldap $CONFIG_DIR
 
 ## Make sure we have files for pids
-mkdir -p /var/run/openldap
-chown -R ldap:ldap /var/run/openldap
-mkdir -p /run/openldap
-chown -R ldap:ldap /run/openldap
+mkdir -p $RUN_DIR
+chown -R ldap:root $RUN_DIR
+#chmod -R 4777 $RUN_DIR
+
+## Something odd here - is it hardcoded?
+mkdir -p $SOCK_DIR
+chown -R ldap:root $SOCK_DIR
+chmod -R 4777 $SOCK_DIR
+
 
 ## Lock down permissions on the eduldap source directory
 chown -R root:root ${EDULDAP}
@@ -125,7 +132,6 @@ if [ ! -f "$CONFIG_DIR/cn=config.ldif" ]; then
 
 fi
 
-echo "Starting LDAP service on ${SLAPD_URLS} ..."
-exec /usr/sbin/slapd -h "\"ldap:/// ldapi:///\"" -F $CONFIG_DIR -d $DEBUG_LEVEL -u ldap -g ldap
-
+echo "Starting LDAP service"
+/usr/sbin/slapd  -u ldap -g ldap -d ${DEBUG_LEVEL} -h 'ldap:/// ldapi:///'
 

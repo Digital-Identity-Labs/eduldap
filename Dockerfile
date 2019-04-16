@@ -19,4 +19,4 @@ COPY etcfs /etc
 USER root
 EXPOSE 389
 
-ENTRYPOINT exec /etc/eduldap/bin/startup.sh
+ENTRYPOINT /etc/eduldap/bin/startup.sh
