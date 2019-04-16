@@ -36,6 +36,9 @@ DATABASE_SUFFIX=`grep olcSuffix $DATABASE_FILE | head -1 | cut -d':' -f 2 | sed 
 ONA=$(dn_to_na $DATABASE_SUFFIX)
 NNA=$(dn_to_na $BASE_DN)
 
+## OpenLDAP can go a little too far with memory
+ulimit --nofile 1024:1024
+
 ## Configuration data will be stored here
 mkdir -p $CONFIG_DIR
 chown -R ldap:ldap $CONFIG_DIR
@@ -43,13 +46,11 @@ chown -R ldap:ldap $CONFIG_DIR
 ## Make sure we have files for pids
 mkdir -p $RUN_DIR
 chown -R ldap:root $RUN_DIR
-#chmod -R 4777 $RUN_DIR
 
-## Something odd here - is it hardcoded?
+## Socket is elsewhere. Something odd here - default is not consistent?
 mkdir -p $SOCK_DIR
 chown -R ldap:root $SOCK_DIR
-chmod -R 4777 $SOCK_DIR
-
+chmod -R 4775 $SOCK_DIR
 
 ## Lock down permissions on the eduldap source directory
 chown -R root:root ${EDULDAP}
@@ -133,5 +134,5 @@ if [ ! -f "$CONFIG_DIR/cn=config.ldif" ]; then
 fi
 
 echo "Starting LDAP service"
-/usr/sbin/slapd  -u ldap -g ldap -d ${DEBUG_LEVEL} -h 'ldap:/// ldapi:///'
+/usr/sbin/slapd  -u ldap -g ldap -d ${DEBUG_LEVEL} -h "${SLAPD_URLS}" $SLAPD_OPTIONS 2>&1
 

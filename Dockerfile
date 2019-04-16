@@ -17,6 +17,8 @@ COPY etcfs /etc
 
 
 USER root
-EXPOSE 389
+EXPOSE 389 636
 
 ENTRYPOINT /etc/eduldap/bin/startup.sh
+
+HEALTHCHECK --interval=10s --timeout=2s --start-period=5s --retries=2  CMD ldapwhoami -Y EXTERNAL -H ldapi:/// || exit 1
