@@ -54,7 +54,9 @@ chmod -R 4775 $SOCK_DIR
 
 ## Lock down permissions on the eduldap source directory
 chown -R root:root ${EDULDAP}
-chmod -R 0600 ${EDULDAP}
+chmod -R 0700 ${EDULDAP}/bin/*
+chmod -R 0600 ${EDULDAP}/initial_config/*
+chmod -R 0600 ${EDULDAP}/modifications/*
 
 echo ":: Mode: ${ENV_MODE}"
 
