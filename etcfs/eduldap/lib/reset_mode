@@ -1,0 +1,14 @@
+#!/bin/sh
+
+set -e
+set -u
+#set -x
+
+function reset_mode {
+
+  echo "Resetting data and configuration..."
+  rm -rfv $CONFIG_DIR/*
+  rm -rfv $DATA_DIR/*.mdb
+  echo "Reset complete"
+
+}

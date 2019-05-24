@@ -9,35 +9,7 @@ function dn_to_na {
   echo $1 | cut -d',' -f 1 | sed 's/=/: /'
 }
 
-## These variables are for private use, unlikely to change
-DATA_DIR=/var/lib/openldap/openldap-data
-EDULDAP=/etc/eduldap
-ETC=/etc/openldap
-CONFIG_DIR=${ETC}/slapd.d
-RUN_DIR=/var/run/openldap
-SOCK_DIR=/var/lib/openldap/run
-
-## These variables can be passed on commandline, Dockerfile, etc to change behaviour
-ENV_MODE=${ENV_MODE:-development}
-ADMIN_SECRET=${ADMIN_SECRET:-`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`}
-BASE_DN=${BASE_DN:-'dc=demo,dc=university'}
-DEBUG_LEVEL=${DEBUG_LEVEL:-256}
-DATABASE=${DATABASE:-default}
-SEED=${SEED:-default}
-RESET=${RESET:-false}
-TIDY=${TIDY:-true}
-SLAPD_URLS="ldap:/// ldapi:///"
-SLAPD_OPTIONS="  "
-
-## Derived from user options
-DATABASE_FILE=$EDULDAP/initial_config/databases/$DATABASE.ldif
-SEED_FILE=$EDULDAP/initial_config/seeds/$SEED.ldif
-DATABASE_SUFFIX=`grep olcSuffix $DATABASE_FILE | head -1 | cut -d':' -f 2 | sed 's/^ //'`
-ONA=$(dn_to_na $DATABASE_SUFFIX)
-NNA=$(dn_to_na $BASE_DN)
-
-## OpenLDAP can go a little too far with memory
-ulimit -n 8192
+function init_mode {
 
 ## Configuration data will be stored here
 mkdir -p $CONFIG_DIR
@@ -57,15 +29,6 @@ chown -R root:root ${EDULDAP}
 chmod -R 0700 ${EDULDAP}/bin/*
 chmod -R 0600 ${EDULDAP}/initial_config/*
 chmod -R 0600 ${EDULDAP}/modifications/*
-
-echo ":: Mode: ${ENV_MODE}"
-
-if [ "${RESET}" == "true" ]; then
-  echo "Resetting data and configuration as RESET=true..."
-  rm -rfv $CONFIG_DIR/*
-  rm -rfv $DATA_DIR/*.mdb
-  echo "Reset complete"
-fi
 
 ## If this is the first run (after image creation) we need to set up the LDAP server config and data
 if [ ! -f "$CONFIG_DIR/cn=config.ldif" ]; then
@@ -133,8 +96,8 @@ if [ ! -f "$CONFIG_DIR/cn=config.ldif" ]; then
   echo ":: Testing configuration..."
   /usr/sbin/slaptest -F $CONFIG_DIR
 
+else
+  echo "Error - Container has already been configured"
 fi
 
-echo "Starting LDAP service"
-/usr/sbin/slapd  -u ldap -g ldap -d ${DEBUG_LEVEL} -h "${SLAPD_URLS}" $SLAPD_OPTIONS 2>&1
-
+}

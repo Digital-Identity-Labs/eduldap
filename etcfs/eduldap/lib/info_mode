@@ -1,0 +1,39 @@
+#!/bin/sh
+
+set -e
+set -u
+#set -x
+
+function info_mode {
+
+    echo "## Initialisation Options"
+    echo
+
+    echo ":: Available databases:"
+    for file in $EDULDAP/initial_config/databases/*.ldif
+    do
+      echo "    $file"
+    done
+    echo
+    echo "   Selected database: ${DATABASE} (${DATABASE_FILE})"
+    echo
+
+    echo ":: Available seed data:"
+    for file in $EDULDAP/initial_config/seeds/*.ldif
+    do
+      echo "    $file"
+    done
+    echo
+    echo "   Selected seed: ${SEED} (${SEED_FILE})"
+    echo
+
+    echo ":: Available schema:"
+    for file in $EDULDAP/initial_config/schema/*.ldif
+    do
+      echo "    $file"
+    done
+    echo
+    echo "   Selected schema list: ${SCHEMA_LIST}"
+    echo
+
+}

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -e
+set -u
+#set -x
+
+## Convert full DN to an LDIF line for the naming attribute (used for root entry)
+function server_mode {
+
+  ## OpenLDAP can go a little too far with memory
+  ulimit -n 8192
+
+  echo "Starting LDAP service"
+  /usr/sbin/slapd  -u ldap -g ldap -d ${DEBUG_LEVEL} -h "${SLAPD_URLS}" $SLAPD_OPTIONS 2>&1
+
+}
