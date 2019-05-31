@@ -1,7 +1,8 @@
+<<<<<<< Updated upstream
 FROM alpine:3.9
 
 LABEL description="Configurable OpenLDAP service with education schema" \
-      version="0.3.0" \
+      version="0.4.0" \
       maintainer="pete@digitalidentitylabs.com"
 
 RUN  apk add --update --no-cache \
