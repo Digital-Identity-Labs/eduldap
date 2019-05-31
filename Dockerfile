@@ -13,14 +13,17 @@ RUN  apk add --update --no-cache \
      openldap-passwd-pbkdf2 \
      gettext
 
+ENV ENV="/etc/profile.d/eduldap.sh"
+
 COPY etcfs /etc
 
+RUN chmod a+x /etc/profile.d/eduldap.sh
 
 USER root
 EXPOSE 389 636
 
 #ENTRYPOINT /etc/eduldap/bin/eduldap.sh
-ENTRYPOINT ["/etc/eduldap/bin/eduldap.sh"]
+ENTRYPOINT ["/etc/eduldap/bin/eduldap"]
 CMD []
 
 
