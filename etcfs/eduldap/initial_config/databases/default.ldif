@@ -16,6 +16,5 @@ olcAccess: to attrs=userPassword
   by * none
 olcAccess: to *
   by self write
-  by dn.base="cn=admin,dc=demo,dc=university" write
   by * read
 

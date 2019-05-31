@@ -58,8 +58,6 @@ chmod -R 0700 ${EDULDAP}/bin/*
 chmod -R 0600 ${EDULDAP}/initial_config/*
 chmod -R 0600 ${EDULDAP}/modifications/*
 
-
-
 if [ "${RESET}" == "true" ]; then
   echo "Resetting data and configuration as RESET=true..."
   rm -rfv $CONFIG_DIR/*
