@@ -27,6 +27,7 @@ ADMIN_SECRET=${ADMIN_SECRET:-`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32
 BASE_DN=${BASE_DN:-'dc=demo,dc=university'}
 DEBUG_LEVEL=${DEBUG_LEVEL:-256}
 DATABASE=${DATABASE:-default}
+SCHEMA="core cosine nis misc pmi ppolicy dyngroup inetorgperson eduperson schac ssh voperson"
 SEED=${SEED:-default}
 RESET=${RESET:-false}
 TIDY=${TIDY:-true}

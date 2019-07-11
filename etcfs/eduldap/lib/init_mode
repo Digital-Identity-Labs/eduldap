@@ -56,8 +56,9 @@ if [ ! -f "$CONFIG_DIR/cn=config.ldif" ]; then
   slapadd -d0 -n0 -F $CONFIG_DIR -l $EDULDAP/initial_config/basic.ldif
 
   echo ":: Importing schema:"
-  for file in $EDULDAP/initial_config/schema/*.ldif
+  for schema in $SCHEMA
   do
+    file="${EDULDAP}/initial_config/schema/${schema}.ldif"
     echo "    $file"
     slapadd  -d0 -n0 -F $CONFIG_DIR -l $file
   done

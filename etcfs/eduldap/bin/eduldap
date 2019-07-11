@@ -36,7 +36,6 @@ elif [[ $mode == reset ]] ; then
 
    reset_mode
 
-
 elif [[ $mode == shell ]] ; then
 
   bin/sh;

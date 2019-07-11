@@ -1,0 +1,11 @@
+dn: cn=apple_auxillary,cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: apple_auxillary
+olcAttributeTypes: {0}( 1.2.840.113556.1.4.867 NAME 'altSecurityIdentities' EQ
+ UALITY caseExactMatch SUBSTR caseIgnoreSubstringsMatch SYNTAX 1.3.6.1.4.1.146
+ 6.115.121.1.15 )
+olcAttributeTypes: {1}( 1.2.840.113556.1.4.771 NAME 'servicePrincipalName' EQU
+ ALITY caseExactMatch SUBSTR caseExactSubstringsMatch SYNTAX 1.3.6.1.4.1.1466.
+ 115.121.1.15 )
+structuralObjectClass: olcSchemaConfig
+entryUUID: ff46674d-5d3f-43ea-98b6-93d436a123e2
