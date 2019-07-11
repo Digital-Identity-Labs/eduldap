@@ -12,7 +12,6 @@ olcDbIndex: objectClass eq
 olcAccess: to attrs=userPassword
   by self write
   by anonymous auth
-  by dn.base="cn=admin,dc=demo,dc=university" write
   by * none
 olcAccess: to *
   by self write
