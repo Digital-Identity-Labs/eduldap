@@ -9,7 +9,7 @@ dn_to_na() {
   echo $1 | cut -d',' -f 1 | sed 's/=/: /'
 }
 
-init_mode() {
+init_cmd() {
 
   ## Configuration data will be stored here
   mkdir -p $CONFIG_DIR

@@ -7,10 +7,10 @@ set -o noclobber
 set -a
 . $EDULDAP_HOME/lib/common
 set +a
-. $EDULDAP_HOME/lib/info_mode
-. $EDULDAP_HOME/lib/init_mode
-. $EDULDAP_HOME/lib/server_mode
-. $EDULDAP_HOME/lib/reset_mode
+. $EDULDAP_HOME/lib/info_command
+. $EDULDAP_HOME/lib/init_command
+. $EDULDAP_HOME/lib/server_command
+. $EDULDAP_HOME/lib/reset_command
 
 default_mode=server
 mode=${1:-$default_mode}
@@ -19,22 +19,22 @@ echo_envmode
 
 if [[ $mode = server ]]; then
 
-  [ $RESET = "true" ] && reset_mode
-  [ $AUTO_INIT = "true" ] && init_mode
+  [ $RESET = "true" ] && reset_cmd
+  [ $AUTO_INIT = "true" ] && init_cmd
 
-  server_mode
+  server_cmd
 
 elif [[ $mode = info ]] ; then
 
-   info_mode
+   info_cmd
 
 elif [[ $mode = init ]] ; then
 
-   init_mode
+   init_cmd
 
 elif [[ $mode = reset ]] ; then
 
-   reset_mode
+   reset_cmd
 
 elif [[ $mode = shell ]] ; then
 
