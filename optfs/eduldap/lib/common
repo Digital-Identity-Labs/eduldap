@@ -1,0 +1,30 @@
+#!/bin/sh
+
+set -e
+set -u
+#set -x
+
+## Convert full DN to an LDIF line for the naming attribute (used for root entry)
+dn_to_na() {
+  echo $1 | cut -d',' -f 1 | sed 's/=/: /'
+}
+
+echo_envmode() {
+  echo ":: Environment Mode: ${ENV_MODE}"
+}
+
+ADMIN_SECRET=${ADMIN_SECRET:-`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`}
+DATABASE_SUFFIX=`grep olcSuffix $DATABASE_FILE | head -1 | cut -d':' -f 2 | sed 's/^ //'`
+ONA=$(dn_to_na $DATABASE_SUFFIX)
+NNA=$(dn_to_na $BASE_DN)
+
+## Load external variables
+#set -a
+#ENVFILE=${EDULDAP_HOME}/etc/envfile
+#[ -f $ENVFILE ] && . $ENVFILE && echo "Loading $ENVFILE..."
+#set +a
+
+#if [[ $EUID -ne 0 ]]; then
+#  echo "This script must be run with root privileges (as root or via sudo)" 1>&2
+#  exit 1
+#fi

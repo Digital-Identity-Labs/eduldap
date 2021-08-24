@@ -4,13 +4,13 @@ set -e
 set -u
 #set -x
 
-function info_mode {
+info_mode() {
 
     echo "## Initialisation Options"
     echo
 
     echo ":: Available databases:"
-    for file in $EDULDAP/initial_config/databases/*.ldif
+    for file in $EDULDAP_HOME/initial_config/databases/*.ldif
     do
       echo "    $file"
     done
@@ -19,7 +19,7 @@ function info_mode {
     echo
 
     echo ":: Available seed data:"
-    for file in $EDULDAP/initial_config/seeds/*.ldif
+    for file in $EDULDAP_HOME/initial_config/seeds/*.ldif
     do
       echo "    $file"
     done
@@ -28,7 +28,7 @@ function info_mode {
     echo
 
     echo ":: Available schema:"
-    for file in $EDULDAP/initial_config/schema/*.ldif
+    for file in $EDULDAP_HOME/initial_config/schema/*.ldif
     do
       echo "    $file"
     done

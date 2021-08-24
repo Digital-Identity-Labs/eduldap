@@ -1,0 +1,101 @@
+#!/bin/sh
+
+set -e
+set -u
+#set -x
+
+## Convert full DN to an LDIF line for the naming attribute (used for root entry)
+dn_to_na() {
+  echo $1 | cut -d',' -f 1 | sed 's/=/: /'
+}
+
+init_mode() {
+
+  ## Configuration data will be stored here
+  mkdir -p $CONFIG_DIR
+  chown -R ldap:ldap $CONFIG_DIR
+
+  ## Make sure we have files for pids
+  mkdir -p $RUN_DIR
+  chown -R ldap:root $RUN_DIR
+
+  ## Socket is elsewhere. Something odd here - default is not consistent?
+  mkdir -p $SOCK_DIR
+  chown -R ldap:root $SOCK_DIR
+  chmod -R 4775 $SOCK_DIR
+
+  ## Lock down permissions on the eduldap source directory
+  chown -R root:root $EDULDAP_HOME
+  chmod -R 0700 $EDULDAP_HOME/bin/*
+  chmod -R 0600 $EDULDAP_HOME/bootstrap/*
+  chmod -R 0600 $EDULDAP_HOME/mods/*
+
+  ## If this is the first run (after image creation) we need to set up the LDAP server config and data
+  if [ ! -f "$CONFIG_DIR/cn=config.ldif" ]; then
+
+    echo "No LDAP configuration has been found. Initialising new configuration!"
+
+    echo ":: Rewriting admin password in '$DATABASE' database"
+    sed -i "s/XSECRET/$ADMIN_SECRET/g" $DATABASE_FILE
+
+    if [ $ENV_MODE = "production" ]; then
+      echo "    Admin password: \$ADMIN_SECRET"
+    else
+      echo "    Admin password: $ADMIN_SECRET"
+    fi
+
+    if [ $BASE_DN != $DATABASE_SUFFIX ]; then
+      echo ":: Rewriting Suffix in Database configuration from $DATABASE_SUFFIX to $BASE_DN..."
+      sed -i "s/$DATABASE_SUFFIX/$BASE_DN/g" $DATABASE_FILE
+      echo ":: Rewriting Suffix in Seed configuration from $DATABASE_SUFFIX to $BASE_DN..."
+      sed -i "s/$DATABASE_SUFFIX/$BASE_DN/g" $SEED_FILE
+      sed -i "s/^$ONA$/$NNA/g" $SEED_FILE
+    fi
+
+    echo ":: Setting up core LDAP server configuration"
+    slapadd -d0 -n0 -F $CONFIG_DIR -l $EDULDAP_HOME/bootstrap/basic.ldif
+
+    echo ":: Importing schema:"
+    for schema in $SCHEMA; do
+      file="$EDULDAP_HOME/bootstrap/schema/$schema.ldif"
+      echo "    $file"
+      slapadd -d0 -n0 -F $CONFIG_DIR -l $file
+    done
+
+    slapadd -d0 -n0 -F $CONFIG_DIR -l $EDULDAP_HOME/bootstrap/modules.ldif
+
+    echo ":: Available databases:"
+    for file in $EDULDAP_HOME/bootstrap/databases/*.ldif; do
+      echo "    $file"
+    done
+
+    echo ":: Adding database definition, ACLs, etc from $DATABASE.ldif"
+    slapadd -d0 -n0 -F $CONFIG_DIR -l $DATABASE_FILE
+
+    echo ":: Available seed data:"
+    for file in $EDULDAP_HOME/bootstrap/seeds/*.ldif; do
+      echo "    $file"
+    done
+
+    echo ":: Loading seed data from $SEED.ldif"
+    slapadd -d0 -n1 -F $CONFIG_DIR -l $SEED_FILE
+
+    echo ":: Post configuration adjustments"
+    slapadd -d0 -n0 -F $CONFIG_DIR -l $EDULDAP_HOME/bootstrap/extras.ldif
+
+    chown -R ldap:ldap $CONFIG_DIR
+    chown -R ldap:ldap $DATA_DIR/*
+
+    if [ "$TIDY" = "true" ]; then
+      echo ":: Removing unused files from $OPENLDAP_ETC as TIDY=true..."
+      rm -rf $OPENLDAP_ETC/schema
+    fi
+
+    echo ":: Testing configuration..."
+    /usr/sbin/slaptest -F $CONFIG_DIR
+
+  else
+    echo "Error - Container has already been configured"
+  fi
+
+}
