@@ -33,7 +33,7 @@ info_cmd() {
       echo "    $file"
     done
     echo
-    echo "   Selected schema list: ${SCHEMA_LIST}"
+    echo "   Selected schema list: ${SCHEMA}"
     echo
 
 }
