@@ -12,50 +12,57 @@ set +a
 . $EDULDAP_HOME/lib/server_command
 . $EDULDAP_HOME/lib/reset_command
 
-default_mode=server
-mode=${1:-$default_mode}
+default_cmd=server
+cmd=${1:-$default_cmd}
 
 echo_envmode
 
-if [[ $mode = server ]]; then
+if [[ $cmd = server ]]; then
 
   [ $RESET = "true" ] && reset_cmd
   [ $AUTO_INIT = "true" ] && init_cmd
 
   server_cmd
 
-elif [[ $mode = info ]] ; then
+elif [[ $cmd = info ]] ; then
 
    info_cmd
 
-elif [[ $mode = init ]] ; then
+elif [[ $cmd = init ]] ; then
 
    init_cmd
 
-elif [[ $mode = reset ]] ; then
+elif [[ $cmd = reset ]] ; then
 
    reset_cmd
 
-elif [[ $mode = shell ]] ; then
-
-  bin/sh;
-
-elif [[ $mode = help ]] ; then
+elif [[ $cmd = help ]] ; then
 
   echo
   echo "EduLDAP is a tool to build and run OpenLDAP directory services"
-  echo "The eduldap script has the following modes:"
+  echo "The eduldap script has the following commands:"
   echo
-  echo "  eduldap - runs with the default mode '$default_mode'"
+  echo "  eduldap        - runs with the default mode '$default_cmd'"
   echo "  eduldap server - runs and initialises an OpenLDAP service"
   echo "  eduldap info   - lists available options in the image"
   echo "  eduldap init   - initialises a new container from the image"
   echo
   echo "  eduldap help - shows this help"
   echo
+  echo "Useful environment variables:"
+  echo
+  echo "  EDULDAP_ENV   - set to production to increase strictness"
+  echo "  SCHEMA        - list schema names to install during init"
+  echo "  SEED          - data seed name to install during init"
+  echo "  ADMIN_SECRET  - admin password to set during init"
+  echo "  BASE_DN       - base DN of directory, set during init"
+  echo
+  echo "Run eduldap info to see available schema, seeds, etc."
+  echo
   exit
 
 else
-  echo "Invalid mode '$mode'"
+  echo "Invalid mode '$cmd'"
+  echo "Run eduldap help for a list of commands"
   exit
 fi

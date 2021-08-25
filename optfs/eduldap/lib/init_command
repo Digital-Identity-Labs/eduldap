@@ -38,7 +38,7 @@ init_cmd() {
     echo ":: Rewriting admin password in '$DATABASE' database"
     sed -i "s/XSECRET/$ADMIN_SECRET/g" $DATABASE_FILE
 
-    if [ $ENV_MODE = "production" ]; then
+    if [ $EDULDAP_ENV = "production" ]; then
       echo "    Admin password: \$ADMIN_SECRET"
     else
       echo "    Admin password: $ADMIN_SECRET"
