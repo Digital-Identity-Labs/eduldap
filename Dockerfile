@@ -16,21 +16,21 @@ RUN  apk add --update --no-cache \
 COPY etcfs /etc
 COPY optfs /opt
 
-ENV DATA_DIR=/var/lib/openldap/openldap-data \
-    EDULDAP_HOME=/opt/eduldap \
-    OPENLDAP_ETC=/etc/openldap \
-    RUN_DIR=/var/run/openldap \
-    SOCK_DIR=/var/lib/openldap/run \
-    ENV_MODE=development \
-    AUTO_INIT=true \
+ENV EDULDAP_ENV=development \
     ADMIN_SECRET="" \
-    BASE_DN='dc=demo,dc=university' \
     DEBUG_LEVEL=256 \
+    BASE_DN='dc=demo,dc=university' \
     DATABASE=default \
     SCHEMA="core cosine nis misc pmi ppolicy dyngroup inetorgperson eduperson schac ssh" \
     SEED=default \
     RESET=false \
     TIDY=true \
+    EDULDAP_HOME=/opt/eduldap \
+    OPENLDAP_ETC=/etc/openldap \
+    DATA_DIR=/var/lib/openldap/openldap-data \
+    RUN_DIR=/var/run/openldap \
+    SOCK_DIR=/var/lib/openldap/run \
+    AUTO_INIT=true \
     SLAPD_URLS="ldap:/// ldapi:///" \
     SLAPD_OPTIONS="  "
 
