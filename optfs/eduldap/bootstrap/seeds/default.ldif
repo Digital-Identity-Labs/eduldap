@@ -42,9 +42,9 @@ givenname: Barbara
 cn: Barbara Jensen
 cn: Babs Jensen
 sn: Jensen
-mail: bjensen@default.demo.university
+mail: bjensen@demo.university
 ou: people
-eduPersonPrincipalName:     bjensen@default.demo.university
-eduPersonEntitlement:       urn:mace:dir:entitlement:common-
-eduPersonScopedAffiliation: staff@default.demo.university
-eduPersonScopedAffiliation: member@default.demo.university
+eduPersonPrincipalName:     bjensen@demo.university
+eduPersonEntitlement:       urn:mace:dir:entitlement:common-libterms
+eduPersonScopedAffiliation: staff@demo.university
+eduPersonScopedAffiliation: member@demo.university
