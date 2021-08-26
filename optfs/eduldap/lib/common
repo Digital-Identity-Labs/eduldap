@@ -13,6 +13,10 @@ echo_envmode() {
   echo ":: Environment: ${EDULDAP_ENV}"
 }
 
+CONFIG_DIR=${OPENLDAP_ETC}/slapd.d
+DATABASE_FILE=${EDULDAP_HOME}/bootstrap/databases/${DATABASE}.ldif
+SEED_FILE=${EDULDAP_HOME}/bootstrap/seeds/${SEED}.ldif
+
 ADMIN_SECRET=${ADMIN_SECRET:-`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`}
 DATABASE_SUFFIX=`grep olcSuffix $DATABASE_FILE | head -1 | cut -d':' -f 2 | sed 's/^ //'`
 ONA=$(dn_to_na $DATABASE_SUFFIX)

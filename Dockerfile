@@ -5,12 +5,18 @@ LABEL description="Configurable OpenLDAP service with education schema and demo 
       maintainer="pete@digitalidentitylabs.com"
 
 RUN  apk add --update --no-cache \
+     tini \
      openldap \
+     openldap-doc \
      openldap-backend-all \
      openldap-clients \
      openldap-mqtt \
      openldap-overlay-all \
      openldap-passwd-pbkdf2 \
+     openldap-passwd-argon2 \
+     openldap-passwd-sha2 \
+     ldapvi \
+     ldapvi-doc \
      gettext
 
 COPY etcfs /etc
@@ -34,16 +40,15 @@ ENV EDULDAP_ENV=development \
     SLAPD_URLS="ldap:/// ldapi:///" \
     SLAPD_OPTIONS="  "
 
-ENV CONFIG_DIR=${OPENLDAP_ETC}/slapd.d \
-    DATABASE_FILE=${EDULDAP_HOME}/bootstrap/databases/${DATABASE}.ldif \
-    SEED_FILE=${EDULDAP_HOME}/bootstrap/seeds/${SEED}.ldif \
-    PATH=${PATH}:/opt/eduldap/bin
+ENV PATH=${PATH}:${EDULDAP_HOME}/bin
+
+WORKDIR ${EDULDAP_HOME}
 
 USER root
 EXPOSE 389 636
 
 #ENTRYPOINT /etc/eduldap/bin/eduldap.sh
-ENTRYPOINT ["sh"]
+ENTRYPOINT ["/sbin/tini", "-v", "--", "eduldap"]
 CMD []
 
 HEALTHCHECK --interval=10s --timeout=2s --start-period=5s --retries=2  CMD ldapwhoami -Y EXTERNAL -H ldapi:/// || exit 1
