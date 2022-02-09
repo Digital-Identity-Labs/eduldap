@@ -23,7 +23,7 @@ COPY optfs /opt
 
 ENV EDULDAP_ENV=development \
     ADMIN_SECRET="" \
-    DEBUG_LEVEL=256 \
+    DEBUG_LEVEL=any \
     BASE_DN='dc=demo,dc=university' \
     DATABASE=default \
     SCHEMA="core cosine nis misc pmi ppolicy dyngroup inetorgperson eduperson schac ssh" \
