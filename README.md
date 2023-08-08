@@ -69,12 +69,8 @@ As well as setting a admin password it loads a list of LDAP schemas including in
 Most of EduLDAP can be configured using environment variables:
 
 | Name | Default | Notes |
---------------------------
+|------|---------|-------|
 | ADMIN_SECRET | ""  | Used for setting admin password | 
-
-
-
-
 | ADMIN_SECRET_FILE | | Used for setting admin password via file |
 | AUTO_INIT | true  | | 
 | BASE_DN | 'dc=demo,dc=university' | Sets base DN | 
